@@ -27,7 +27,7 @@
  *
  * @section DESCRIPTION
  * 
- * This libaray is an implementation of SMTP protocol as described by 
+ * This libaray is an implementation of SNTP protocol as described by 
  * [rfc4330](https://tools.ietf.org/html/rfc4330).
  *
  *
@@ -38,8 +38,8 @@
  * The goal of this library is to be lightweight and portable so it can be used 
  * by different microcontrollers.
  * 
- * Please read this license. Dealing with time is a delicate buisiness. The author 
- * of this library strongly advice against using in in safety critical applications.
+ * Please read the license. Dealing with time is a delicate buisiness. The author 
+ * of this library strongly advice against using it in safety critical applications.
  */
 
 #ifndef NTP_H_
@@ -182,7 +182,7 @@ void ntp_get_date(ntp_timestamp_t ts, uint32_t* year, uint32_t* month, uint32_t*
 {
 	uint32_t days_in_month[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
-	/* initial value of day, changes throughout the computation of year and month */
+	/* initial value of day, updated throughout the computation of year and month */
 	*day  = NTP_GET_TS_DAYS_SINCE_JAN_1_1900(ts);
 
 	/* year */
@@ -203,7 +203,7 @@ void ntp_get_date(ntp_timestamp_t ts, uint32_t* year, uint32_t* month, uint32_t*
 		} 	
 	}
 
-	/* Month */
+	/* month */
 	if (NTP_IS_LEAP_YEAR(*year)) {
 		days_in_month[1] = 29; // february, index starts at 0
 	}
