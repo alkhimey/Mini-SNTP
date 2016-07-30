@@ -1,11 +1,11 @@
 /**
  * @author  Artium Nihamkin <artium@nihamkin.com>
- * @date May 20145
+ * @date May 2016
  *
  * @section LICENSE
  *
  * The MIT License (MIT)
- * Copyright © 2015 Artium Nihamkin, http://nihamkin.com
+ * Copyright © 2016 Artium Nihamkin, http://nihamkin.com
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the “Software”), to deal
