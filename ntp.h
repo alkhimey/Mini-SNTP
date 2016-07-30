@@ -54,6 +54,19 @@
 #endif
 
 
+
+#if BYTE_ORDER == BIG_ENDIAN
+
+#define NTOHL(n) (n)
+
+#else
+
+#define NTOHL(n) ((((n & 0xFF))       << 24) | \
+                  (((n & 0xFF00))     << 8)  | \
+                  (((n & 0xFF0000))   >> 8)  | \
+                  (((n & 0xFF000000)) >> 24))
+#endif
+
 typedef union  {
 	struct {
 		uint8_t integer;
@@ -151,11 +164,11 @@ typedef struct PACKED {
 #define NTP_GET_VN(b1)                          (((b1) & 0b00111000) >> 3) 
 #define NTP_GET_MODE(b1) ((ntp_mode_t)          (((b1) & 0b00000111)))
 
-#define NTP_GET_TS_SECONDS_AFTER_MINUTE(ts)  ((ntohl((ts).integer)      )  % 60)
-#define NTP_GET_TS_MINUTES_AFTER_HOUR(ts)    ((ntohl((ts).integer) /  60)  % 60)
-#define NTP_GET_TS_HOURS_SINCE_MIDNIGHT(ts)  ((ntohl((ts).integer) / 3600) % 24)
+#define NTP_GET_TS_SECONDS_AFTER_MINUTE(ts)  ((NTOHL((ts).integer)      )  % 60)
+#define NTP_GET_TS_MINUTES_AFTER_HOUR(ts)    ((NTOHL((ts).integer) /  60)  % 60)
+#define NTP_GET_TS_HOURS_SINCE_MIDNIGHT(ts)  ((NTOHL((ts).integer) / 3600) % 24)
 
-#define NTP_GET_TS_DAYS_SINCE_JAN_1_1900(ts) (ntohl((ts).integer) / 86400)
+#define NTP_GET_TS_DAYS_SINCE_JAN_1_1900(ts) (NTOHL((ts).integer) / 86400)
 
 #define NTP_IS_LEAP_YEAR(y) ((((y)%4 == 0) && ((y)%100 != 0)) || (y)%400 == 0) 
 
