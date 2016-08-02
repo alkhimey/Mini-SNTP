@@ -53,19 +53,18 @@
 	#error "ntp.h: Your compiler does not support packed attribute"
 #endif
 
+/*
+ * Portable network to host byte order conversion.
+ */
+uint32_t NTOHL(uint32_t n)
+{
+    unsigned char *np = (unsigned char *)&n;
 
-
-#if BYTE_ORDER == BIG_ENDIAN
-
-#define NTOHL(n) (n)
-
-#else
-
-#define NTOHL(n) ((((n & 0xFF))       << 24) | \
-                  (((n & 0xFF00))     << 8)  | \
-                  (((n & 0xFF0000))   >> 8)  | \
-                  (((n & 0xFF000000)) >> 24))
-#endif
+    return ((uint32_t)np[0] << 24) |
+        ((uint32_t)np[1] << 16) |
+        ((uint32_t)np[2] << 8) |
+        (uint32_t)np[3];
+}
 
 typedef union  {
 	struct {
