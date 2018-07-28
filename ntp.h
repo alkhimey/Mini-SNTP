@@ -112,7 +112,12 @@ typedef enum  {
 	RESERVED_7        = 7,	
 } ntp_mode_t;
 
-
+typedef enum  {
+	KISS_O_DEATH_MESAGE       = 0,
+	PRIMARY_REFERENCE         = 1,
+	FIRST_SECONDARY_REFERENCE = 2,
+	LAST_SECONDARY_REFERENCE  = 15
+} ntp_startum_t;
 
 
 /*
@@ -129,7 +134,7 @@ typedef struct PACKED {
 	uint8_t         byte_1;                   // consist of multiple fields
 	uint8_t         stratum;
 	uint8_t         poll;
-        int8_t          precision;
+   int8_t          precision;
 	fixed_16_16_t   root_delay;
 	ufixed_16_16_t  root_dispersion;
 	char            reference_identifier[4];  // see figure 2 in rfc4330
@@ -138,7 +143,7 @@ typedef struct PACKED {
 	ntp_timestamp_t recieve_timestamp;
 	ntp_timestamp_t transmit_timestamp;
 	uint32_t        key_identifier;           // not used by sntp
-        uint32_t        mesage_digest[4];         // not uses by sntp
+	uint32_t        mesage_digest[4];         // not uses by sntp
 } ntp_packet_t;
 
 
@@ -155,7 +160,7 @@ typedef struct PACKED {
  * @notice Transmit timestamp is optional.
  *   
  */
-#define NTP_REQUEST_MSG { .byte_1 = 0b000100011 } ; 
+#define NTP_REQUEST_MSG { .byte_1 = 0b000100011} ; 
 
 #define NTP_ORIGIN_YEAR 1900 /// aka epoch
 
@@ -163,6 +168,7 @@ typedef struct PACKED {
 #define NTP_GET_VN(b1)                          (((b1) & 0b00111000) >> 3) 
 #define NTP_GET_MODE(b1) ((ntp_mode_t)          (((b1) & 0b00000111)))
 
+#define NTP_GET_TS_MS_AFTER_SECOND(ts)       ((double)(NTOHL((ts).fraction)) * 0x100.0p-32l)
 #define NTP_GET_TS_SECONDS_AFTER_MINUTE(ts)  ((NTOHL((ts).integer)      )  % 60)
 #define NTP_GET_TS_MINUTES_AFTER_HOUR(ts)    ((NTOHL((ts).integer) /  60)  % 60)
 #define NTP_GET_TS_HOURS_SINCE_MIDNIGHT(ts)  ((NTOHL((ts).integer) / 3600) % 24)

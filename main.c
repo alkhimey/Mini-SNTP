@@ -31,6 +31,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -47,10 +48,11 @@ void printf_ts(char header[], ntp_timestamp_t ts)
 	uint32_t s  = NTP_GET_TS_SECONDS_AFTER_MINUTE(ts);
 	uint32_t mi = NTP_GET_TS_MINUTES_AFTER_HOUR(ts);
 	uint32_t h  = NTP_GET_TS_HOURS_SINCE_MIDNIGHT(ts);
+   double   ms = NTP_GET_TS_MS_AFTER_SECOND(ts); // BIG QUESTION HERE!
 
 	ntp_get_date(ts, &y, &mo, &d);
 	printf("%s\t= ", header);
-	printf("%02u:%02u:%02u %02u/%02u/%02u\n", h, mi, s, d+1, mo+1, y);
+	printf("%02u:%02u:%02u.%03.0f %02u/%02u/%02u\n", h, mi, s, ms, d+1, mo+1, y);
 }
 
 
@@ -71,7 +73,7 @@ int main()
 
 	if ((fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
 		perror("cannot create socket");
-		return 0;
+		exit(-1);
 	}
 
 	/* fill in the server's address and data */
@@ -83,7 +85,7 @@ int main()
 	hp = gethostbyname(host);
 	if (!hp) {
 		fprintf(stderr, "could not obtain address of %s\n", host);
-		return 0;
+		exit(-1);
 	}
 
 	/* put the host's address into the server address structure */
@@ -94,7 +96,7 @@ int main()
 	/* send a message to the server */
 	if (sendto(fd, &client_msg, sizeof(client_msg), 0, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) {
 		perror("sendto failed");
-		return 0;
+		exit(-1);
 	}
 
 	printf("recieving data..\n");
@@ -107,7 +109,15 @@ int main()
 	printf("VN\t\t\t= %u\n",   NTP_GET_VN  (server_msg.byte_1));
 	printf("MODE\t\t\t= %u\n", NTP_GET_MODE(server_msg.byte_1));
 
-	printf("STRATUM\t\t\t= %u\n", server_msg.stratum);
+	if (server_msg.stratum == KISS_O_DEATH_MESAGE) {
+		printf("STRATUM\t\t\t= KISS-O'-DEATH MSG");
+	} else if (server_msg.stratum == PRIMARY_REFERENCE) {
+		printf("STRATUM\t\t\t= PRIMARY REFERENCE");
+	} else if (server_msg.stratum >= PRIMARY_REFERENCE && server_msg.stratum <= SECONDARY_REFERENCE) {
+		printf("STRATUM\t\t\t= SECONDARY REFERENCE(%u\n)", server_msg.stratum);
+	} else {
+		printf("STRATUM\t\t\t= %u\n", server_msg.stratum);
+	}
 
 	printf("POLL INTERVAL\t\t= %u\n",         server_msg.poll);
 	printf("PRECISION\t\t= %d\n",             server_msg.precision);
