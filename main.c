@@ -110,11 +110,11 @@ int main()
 	printf("MODE\t\t\t= %u\n", NTP_GET_MODE(server_msg.byte_1));
 
 	if (server_msg.stratum == KISS_O_DEATH_MESAGE) {
-		printf("STRATUM\t\t\t= KISS-O'-DEATH MSG");
+		printf("STRATUM\t\t\t= KISS-O'-DEATH MSG\n");
 	} else if (server_msg.stratum == PRIMARY_REFERENCE) {
-		printf("STRATUM\t\t\t= PRIMARY REFERENCE");
-	} else if (server_msg.stratum >= PRIMARY_REFERENCE && server_msg.stratum <= SECONDARY_REFERENCE) {
-		printf("STRATUM\t\t\t= SECONDARY REFERENCE(%u\n)", server_msg.stratum);
+		printf("STRATUM\t\t\t= PRIMARY REFERENCE\n");
+	} else if (server_msg.stratum >= PRIMARY_REFERENCE && server_msg.stratum <= LAST_SECONDARY_REFERENCE) {
+		printf("STRATUM\t\t\t= SECONDARY REFERENCE(%u\n)\n", server_msg.stratum);
 	} else {
 		printf("STRATUM\t\t\t= %u\n", server_msg.stratum);
 	}
